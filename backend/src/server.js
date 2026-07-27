@@ -1,11 +1,14 @@
 import express from "express";
-// import cors from "cors";
+import cors from "cors";
 import { serve } from "inngest/express";
 import path from "path";
+import { clerkMiddleware } from "@clerk/express";
 
 import { ENV } from "./lib/env.js";
 import { connectDB } from "./config/db.js";
 import { inngest, functions } from "./lib/inngest.js";
+import { protectedRoute } from "./middleware/protectedRoute.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 const app = express();
 
@@ -16,14 +19,21 @@ const __dirname = path.resolve();
 //middleware
 app.use(express.json());
 // credentials true meaning >> server allows a browser to  include cookies on request
-// app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+// 
+app.use(clerkMiddleware()); // this adds auth field to request object: req.auth()
 
-app.use("/api/inngest", serve({ client: inngest, functions }))
+app.use("/api/inngest", serve({ client: inngest, functions }));
+app.use("/api/chat", chatRoutes)
 
 app.get("/books", (_, res) => {
   res.status(200).json({ message: "API is working" })
 })
 app.get("/health", (_, res) => {
+  res.status(200).json({ message: "API is working" })
+})
+
+app.get("/video-calls", protectedRoute, (_, res) => {
   res.status(200).json({ message: "API is working" })
 })
 
