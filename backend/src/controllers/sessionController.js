@@ -157,7 +157,7 @@ export async function endSession(req, res) {
     res.status(200).json({ session, message: "Session ended successfully" });
 
   } catch (error) {
-    console.error("Error in endSession controller::", error);
-    res.status(500).json({ message: "Internal Server Error" })
+    conselo.error("Error in endSession controller::", error);
+    res.status(400).json({ message: "Internal Server Error" })
   }
 }
